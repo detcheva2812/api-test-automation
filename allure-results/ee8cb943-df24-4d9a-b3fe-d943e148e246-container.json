@@ -1,0 +1,1 @@
+{"uuid":"ee8cb943-df24-4d9a-b3fe-d943e148e246","name":"diliana.api.base.PetTests","children":["04c70a17-ca5e-44d5-ba76-60fd4ce3f6a3"],"befores":[{"name":"setup","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1769960469517,"stop":1769960469841}],"afters":[],"start":1769960469487,"stop":1769960472134}
