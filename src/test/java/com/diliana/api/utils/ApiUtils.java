@@ -84,4 +84,21 @@ public class ApiUtils {
 
         return response;
     }
+
+    // Изтрива pet по ID
+    public static Response deletePet(long id) {
+        Response response = given()
+                .when()
+                .delete("/pet/" + id)
+                .then()
+                .extract()
+                .response();
+
+        if (response.statusCode() != 200 && response.statusCode() != 404) {
+            throw new RuntimeException("Failed to delete pet: " + response.getStatusCode());
+        }
+
+        return response;
+    }
+
 }

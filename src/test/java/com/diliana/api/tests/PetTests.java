@@ -19,8 +19,8 @@ public class PetTests extends BaseTest {
         System.out.printf("===== [Setup] Random petId selected: %d =====%n", petId);
     }
 
-    @Test
-    public void getRandomPetById_shouldReturn200() {
+    @Test (groups = "positive")
+    public void getRandomPetById_shouldReturn200()  {
         System.out.println("===== [Test] getRandomPetById_shouldReturn200 START =====");
 
         Response petResponse = given()
@@ -37,7 +37,7 @@ public class PetTests extends BaseTest {
         System.out.println("===== [Test] getRandomPetById_shouldReturn200 END =====");
     }
 
-    @Test
+    @Test (groups = "positive")
     public void createPet_thenGetPet_shouldMatch() {
         System.out.println("===== [Test] createPet_thenGetPet_shouldMatch START =====");
 
@@ -62,7 +62,7 @@ public class PetTests extends BaseTest {
         System.out.println("===== [Test] createPet_thenGetPet_shouldMatch END =====");
     }
 
-    @Test
+    @Test (groups = "positive")
     public void updatePet_shouldChangeNameAndStatus() {
         System.out.println("===== [Test] updatePet_shouldChangeNameAndStatus START =====");
 
@@ -95,4 +95,59 @@ public class PetTests extends BaseTest {
 
         System.out.println("===== [Test] updatePet_shouldChangeNameAndStatus END =====");
     }
+
+    @Test (groups = "negative")
+    public void getDeletedPet_shouldReturn404() {
+        System.out.println("===== [Test] getDeletedPet_shouldReturn404 START =====");
+
+        // Създаваме временно Pet
+        Response createResponse = ApiUtils.createPet("TempPet", "available");
+        long tempPetId = createResponse.jsonPath().getLong("id");
+        System.out.printf("[Setup] Created temp petId: %d%n", tempPetId);
+
+        // Изтриваме го
+        ApiUtils.deletePet(tempPetId);
+        System.out.printf("[Setup] Deleted temp petId: %d%n", tempPetId);
+
+        // Правим GET към вече изтрития Pet
+        Response getResponse = given()
+                .when()
+                .get("/pet/" + tempPetId)
+                .then()
+                .extract()
+                .response();
+
+        // Проверка за негативен сценарий
+        assertEquals(getResponse.getStatusCode(), 404);
+        System.out.println("[Result] GET deleted pet returned 404 as expected");
+
+        System.out.println("===== [Test] getDeletedPet_shouldReturn404 END =====");
+    }
+
+
+    @Test (groups = "negative")
+    public void getPetWithInvalidIdFormat_shouldReturn400() {
+        System.out.println("===== [Test] getPetWithInvalidIdFormat_shouldReturn400 START =====");
+
+        String invalidId = "invalid123"; // string вместо long
+
+        Response response = given()
+                .when()
+                .get("/pet/" + invalidId)
+                .then()
+                .extract()
+                .response();
+
+        //The Swagger API returns status 404 when we enter invalid String format instead of long for an id field, so that's what we expect as per documentation
+        assertEquals(response.getStatusCode(), 404);
+
+        System.out.println("[Result] GET pet with invalid ID format returned 400 as expected");
+
+        System.out.println("===== [Test] getPetWithInvalidIdFormat_shouldReturn400 END =====");
+    }
+
+
+
+
+
 }
