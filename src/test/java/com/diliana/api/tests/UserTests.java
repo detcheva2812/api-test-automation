@@ -3,6 +3,8 @@ package com.diliana.api.tests;
 import com.diliana.api.base.BaseTest;
 import com.diliana.api.utils.UserUtils;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
@@ -10,13 +12,15 @@ import static org.testng.Assert.assertEquals;
 
 public class UserTests extends BaseTest {
 
+    private static final Logger logger = LogManager.getLogger(UserTests.class);
+
     private String username; // for cleanup after each test
 
     // ================= POSITIVE TESTS =================
 
     @Test(groups = "positive")
     public void createUser_shouldReturn200() {
-        System.out.println("===== [Test] createUser_shouldReturn200 START =====");
+        logger.info("===== [Test] createUser_shouldReturn200 START =====");
 
         username = UserUtils.generateRandomUsername();
 
@@ -30,13 +34,13 @@ public class UserTests extends BaseTest {
 
         assertEquals(response.getStatusCode(), 200);
 
-        System.out.println("[Result] User created: " + username);
-        System.out.println("===== [Test] createUser_shouldReturn200 END =====");
+        logger.info("[Result] User created: {}", username);
+        logger.info("===== [Test] createUser_shouldReturn200 END =====");
     }
 
     @Test(groups = "positive")
     public void createAndGetUser_shouldMatch() {
-        System.out.println("===== [Test] createAndGetUser_shouldMatch START =====");
+        logger.info("===== [Test] createAndGetUser_shouldMatch START =====");
 
         username = UserUtils.generateRandomUsername();
 
@@ -54,15 +58,15 @@ public class UserTests extends BaseTest {
         assertEquals(getResponse.jsonPath().getString("username"), username);
         assertEquals(getResponse.jsonPath().getString("firstName"), "Ana");
 
-        System.out.println("[Result] User fetched successfully");
-        System.out.println("===== [Test] createAndGetUser_shouldMatch END =====");
+        logger.info("[Result] User fetched successfully: {}", username);
+        logger.info("===== [Test] createAndGetUser_shouldMatch END =====");
     }
 
     // ================= NEGATIVE TESTS =================
 
     @Test(groups = "negative")
     public void getNonExistingUser_shouldReturn404() {
-        System.out.println("===== [Test] getNonExistingUser_shouldReturn404 START =====");
+        logger.info("===== [Test] getNonExistingUser_shouldReturn404 START =====");
 
         username = "non_existing_user_123456";
 
@@ -70,13 +74,13 @@ public class UserTests extends BaseTest {
 
         assertEquals(response.getStatusCode(), 404);
 
-        System.out.println("[Result] 404 returned as expected");
-        System.out.println("===== [Test] getNonExistingUser_shouldReturn404 END =====");
+        logger.info("[Result] 404 returned as expected for username={}", username);
+        logger.info("===== [Test] getNonExistingUser_shouldReturn404 END =====");
     }
 
     @Test(groups = "negative")
     public void deleteNonExistingUser_shouldReturn404() {
-        System.out.println("===== [Test] deleteNonExistingUser_shouldReturn404 START =====");
+        logger.info("===== [Test] deleteNonExistingUser_shouldReturn404 START =====");
 
         username = "ghost_user_999";
 
@@ -84,8 +88,8 @@ public class UserTests extends BaseTest {
 
         assertEquals(response.getStatusCode(), 404);
 
-        System.out.println("[Result] Delete non-existing user returned 404");
-        System.out.println("===== [Test] deleteNonExistingUser_shouldReturn404 END =====");
+        logger.info("[Result] Delete non-existing user returned 404 for username={}", username);
+        logger.info("===== [Test] deleteNonExistingUser_shouldReturn404 END =====");
     }
 
     // ================= CLEANUP =================
@@ -94,7 +98,7 @@ public class UserTests extends BaseTest {
     public void cleanup() {
         if (username != null) {
             UserUtils.deleteUser(username);
-            System.out.println("[Cleanup] User deleted (if existed): " + username);
+            logger.info("[Cleanup] User deleted (if existed): {}", username);
             username = null;
         }
     }
