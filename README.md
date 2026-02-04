@@ -44,7 +44,7 @@ api-test-automation/
 ## Enums 
 ```text
 PetStatus   : available, sold, pending 
-OrderStatus :– placed, approved, delivered 
+OrderStatus : placed, approved, delivered 
 ```
 ---
 
