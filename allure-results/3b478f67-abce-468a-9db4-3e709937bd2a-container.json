@@ -1,1 +1,0 @@
-{"uuid":"3b478f67-abce-468a-9db4-3e709937bd2a","name":"com.diliana.api.tests.UserTests","children":["bfd533ec-6436-424f-b340-524a178e764d"],"befores":[{"name":"setup","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1770061188197,"stop":1770061188303}],"afters":[],"start":1770061188188,"stop":1770061190379}

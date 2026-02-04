@@ -1,10 +1,14 @@
 package com.diliana.api.utils;
+
 import io.restassured.response.Response;
+
 import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
+
 public class UserUtils {
 
-    // Генерираме уникално username, за да няма конфликти
+
     public static String generateRandomUsername() {
         return "user_" + UUID.randomUUID().toString().substring(0, 8);
     }

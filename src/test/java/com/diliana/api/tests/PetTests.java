@@ -1,13 +1,15 @@
 package com.diliana.api.tests;
 
 import com.diliana.api.base.BaseTest;
-import com.diliana.api.utils.ApiUtils;
+import com.diliana.api.utils.PetUtils;
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
+import com.diliana.api.enums.PetStatus;
 import static io.restassured.RestAssured.given;
 import static org.testng.Assert.assertEquals;
+
+
 
 public class PetTests extends BaseTest {
 
@@ -15,12 +17,12 @@ public class PetTests extends BaseTest {
 
     @BeforeClass
     public void init() {
-        petId = ApiUtils.getRandomAvailablePetId();
+        petId = PetUtils.getRandomAvailablePetId();
         System.out.printf("===== [Setup] Random petId selected: %d =====%n", petId);
     }
 
-    @Test (groups = "positive")
-    public void getRandomPetById_shouldReturn200()  {
+    @Test(groups = "positive")
+    public void getRandomPetById_shouldReturn200() {
         System.out.println("===== [Test] getRandomPetById_shouldReturn200 START =====");
 
         Response petResponse = given()
@@ -37,11 +39,11 @@ public class PetTests extends BaseTest {
         System.out.println("===== [Test] getRandomPetById_shouldReturn200 END =====");
     }
 
-    @Test (groups = "positive")
+    @Test(groups = "positive")
     public void createPet_thenGetPet_shouldMatch() {
         System.out.println("===== [Test] createPet_thenGetPet_shouldMatch START =====");
 
-        Response createResponse = ApiUtils.createPet("Rex", "available");
+        Response createResponse = PetUtils.createPet("Rex", PetStatus.AVAILABLE);
         long createdPetId = createResponse.jsonPath().getLong("id");
         String createdPetName = createResponse.jsonPath().getString("name");
 
@@ -62,18 +64,18 @@ public class PetTests extends BaseTest {
         System.out.println("===== [Test] createPet_thenGetPet_shouldMatch END =====");
     }
 
-    @Test (groups = "positive")
+    @Test(groups = "positive")
     public void updatePet_shouldChangeNameAndStatus() {
         System.out.println("===== [Test] updatePet_shouldChangeNameAndStatus START =====");
 
         // Създаваме нов pet за update
-        Response createResponse = ApiUtils.createPet("Bella", "available");
+        Response createResponse = PetUtils.createPet("Bella", PetStatus.AVAILABLE);
         long createdPetId = createResponse.jsonPath().getLong("id");
         System.out.printf("[Result] Created petId: %d, name: %s%n",
-                          createdPetId, createResponse.jsonPath().getString("name"));
+                createdPetId, createResponse.jsonPath().getString("name"));
 
         // Update pet
-        Response updateResponse = ApiUtils.updatePet(createdPetId, "BellaUpdated", "sold");
+        Response updateResponse = PetUtils.updatePet(createdPetId, "BellaUpdated", PetStatus.SOLD);
         assertEquals(updateResponse.getStatusCode(), 200);
 
         // Проверяваме, че промяната е валидна
@@ -89,27 +91,27 @@ public class PetTests extends BaseTest {
         assertEquals(getResponse.jsonPath().getString("status"), "sold");
 
         System.out.printf("[Result] Updated petId: %d, name: %s, status: %s%n",
-                          createdPetId,
-                          getResponse.jsonPath().getString("name"),
-                          getResponse.jsonPath().getString("status"));
+                createdPetId,
+                getResponse.jsonPath().getString("name"),
+                getResponse.jsonPath().getString("status"));
 
         System.out.println("===== [Test] updatePet_shouldChangeNameAndStatus END =====");
     }
 
-    @Test (groups = "negative")
+    @Test(groups = "negative")
     public void getDeletedPet_shouldReturn404() {
         System.out.println("===== [Test] getDeletedPet_shouldReturn404 START =====");
 
-        // Създаваме временно Pet
-        Response createResponse = ApiUtils.createPet("TempPet", "available");
+        // Create a temporary pet
+        Response createResponse = PetUtils.createPet("TempPet", PetStatus.AVAILABLE);
         long tempPetId = createResponse.jsonPath().getLong("id");
         System.out.printf("[Setup] Created temp petId: %d%n", tempPetId);
 
-        // Изтриваме го
-        ApiUtils.deletePet(tempPetId);
+        // Delete the temporary pet
+        PetUtils.deletePet(tempPetId);
         System.out.printf("[Setup] Deleted temp petId: %d%n", tempPetId);
 
-        // Правим GET към вече изтрития Pet
+        // Try to get the deleted pet
         Response getResponse = given()
                 .when()
                 .get("/pet/" + tempPetId)
@@ -117,7 +119,6 @@ public class PetTests extends BaseTest {
                 .extract()
                 .response();
 
-        // Проверка за негативен сценарий
         assertEquals(getResponse.getStatusCode(), 404);
         System.out.println("[Result] GET deleted pet returned 404 as expected");
 
@@ -125,8 +126,8 @@ public class PetTests extends BaseTest {
     }
 
 
-    @Test (groups = "negative")
-    public void getPetWithInvalidIdFormat_shouldReturn400() {
+    @Test(groups = "negative")
+    public void getPetWithInvalidIdFormat_shouldReturn404() {
         System.out.println("===== [Test] getPetWithInvalidIdFormat_shouldReturn400 START =====");
 
         String invalidId = "invalid123"; // string вместо long
@@ -147,7 +148,6 @@ public class PetTests extends BaseTest {
     }
 
 
-
-
-
 }
+
+

@@ -10,7 +10,7 @@ import static org.testng.Assert.assertEquals;
 
 public class UserTests extends BaseTest {
 
-    private String username; // за cleanup след всеки тест
+    private String username; // for cleanup after each test
 
     // ================= POSITIVE TESTS =================
 
@@ -23,7 +23,7 @@ public class UserTests extends BaseTest {
         Response response = UserUtils.createUser(
                 username,
                 "Diliana",
-                "Detcheva",
+                "Todorova",
                 "didi@mail.com",
                 "123456"
         );

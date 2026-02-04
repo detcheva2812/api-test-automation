@@ -2,32 +2,31 @@ package com.diliana.api.tests;
 
 import com.diliana.api.base.BaseTest;
 import com.diliana.api.utils.OrderUtils;
-import com.diliana.api.utils.ApiUtils;
+import com.diliana.api.utils.PetUtils;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import com.diliana.api.enums.OrderStatus;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
 public class OrderTests extends BaseTest {
 
-    private long orderId; // за cleanup
+    private long orderId; // for cleanup
     private long petId;
 
     @Test(groups = "positive")
     public void createOrder_shouldReturn200() {
         System.out.println("===== [Test] createOrder_shouldReturn200 START =====");
 
-        // Вземаме случайно petId
-        this.petId = ApiUtils.getRandomAvailablePetId();
+        // Take a random petId
+        this.petId = PetUtils.getRandomAvailablePetId();
 
-        // Генерираме уникално orderId
+        // Generate unique orderId
         this.orderId = System.currentTimeMillis();
 
-        Response response = OrderUtils.createOrder(orderId, petId, 2);
+        Response response = OrderUtils.createOrder(orderId, petId, 2, OrderStatus.PLACED);
 
 
         assertEquals(response.getStatusCode(), 200);
@@ -37,20 +36,19 @@ public class OrderTests extends BaseTest {
     }
 
 
-
     @Test(groups = "positive")
     public void createAndGetOrder_shouldMatch() {
         System.out.println("===== [Test] createAndGetOrder_shouldMatch START =====");
 
-        this.petId = ApiUtils.getRandomAvailablePetId();
+        this.petId = PetUtils.getRandomAvailablePetId();
         this.orderId = System.currentTimeMillis();
         int quantity = 3;
 
-        // Създаваме order
-        Response createResponse = OrderUtils.createOrder(orderId, petId, quantity);
+        // Create order
+        Response createResponse = OrderUtils.createOrder(orderId, petId, quantity, OrderStatus.PLACED);
         assertEquals(createResponse.getStatusCode(), 200);
 
-        // Вземаме order по ID
+        // Take the order by ID
         Response getResponse = OrderUtils.getOrder(orderId);
         assertEquals(getResponse.getStatusCode(), 200);
         assertEquals(getResponse.jsonPath().getLong("id"), orderId);
@@ -92,8 +90,6 @@ public class OrderTests extends BaseTest {
     }
 
 
-
-
     @AfterMethod
     public void cleanup() {
         if (orderId != 0) {
@@ -102,7 +98,6 @@ public class OrderTests extends BaseTest {
             orderId = 0;
         }
     }
-
 
 
 }

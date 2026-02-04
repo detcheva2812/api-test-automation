@@ -1,22 +1,26 @@
 package com.diliana.api.utils;
 
 import io.restassured.response.Response;
+
 import static io.restassured.RestAssured.given;
+
+import com.diliana.api.enums.OrderStatus;
+
 
 public class OrderUtils {
 
-    // ================= CREATE =================с подадени id-та и количество
-    public static Response createOrder(long orderId, long petId, int quantity) {
+    // ================= CREATE =================
+    public static Response createOrder(long orderId, long petId, int quantity, OrderStatus status) {
 
         String requestBody = String.format("""
                 {
                   "id": %d,
                   "petId": %d,
                   "quantity": %d,
-                  "status": "placed",
+                  "status": "%s",
                   "complete": true
                 }
-                """, orderId, petId, quantity);
+                """, orderId, petId, quantity, status.name().toLowerCase());
 
         Response response = given()
                 .header("Content-Type", "application/json")
